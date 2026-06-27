@@ -210,9 +210,10 @@ function syncUIFromState() {
 }
 
 function updateLayout() {
-  // Hardcoded Virtual 10x15cm Paper for the printer trick
-  const paperW = 100;
-  const paperH = 150;
+  // Use A4 as the virtual paper size. This prevents Epson's driver from aggressively scaling 
+  // or auto-rotating what it thinks is a 4x6 borderless photo.
+  const paperW = 210;
+  const paperH = 297;
   
   // Calculate offsets to center the card HORIZONTALLY, and align it to the TOP
   const offsetX = (paperW - state.cardW) / 2;
