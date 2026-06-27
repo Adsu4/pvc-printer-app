@@ -21,13 +21,8 @@ const btnCancelPrint = document.getElementById('btn-cancel-print');
 const btnConfirmPrint = document.getElementById('btn-confirm-print');
 
 // Controls
-const inputPaperW = document.getElementById('paper-w');
-const inputPaperH = document.getElementById('paper-h');
 const inputCardW = document.getElementById('card-w');
 const inputCardH = document.getElementById('card-h');
-const inputOffsetX = document.getElementById('offset-x');
-const inputOffsetY = document.getElementById('offset-y');
-const toggleAutoCenter = document.getElementById('auto-center');
 const toggleAutoFlipBack = document.getElementById('auto-flip-back');
 
 const sliderBrightness = document.getElementById('brightness');
@@ -44,13 +39,8 @@ const btnPrintBack = document.getElementById('btn-print-back');
 
 // State
 let state = {
-  paperW: 100.0,
-  paperH: 150.0,
   cardW: 54.0,
   cardH: 86.0,
-  offsetX: 23.0,
-  offsetY: 32.0,
-  autoCenter: true,
   autoFlipBack: true,
   currentSide: 'front', // 'front' | 'back'
   pendingPrintSide: null,
@@ -85,26 +75,12 @@ function attachEventListeners() {
   });
 
   // Layout Inputs
-  [inputPaperW, inputPaperH, inputCardW, inputCardH, inputOffsetX, inputOffsetY].forEach(input => {
+  [inputCardW, inputCardH].forEach(input => {
     input.addEventListener('input', () => {
-      state.paperW = parseFloat(inputPaperW.value) || 100;
-      state.paperH = parseFloat(inputPaperH.value) || 150;
       state.cardW = parseFloat(inputCardW.value) || 54;
       state.cardH = parseFloat(inputCardH.value) || 86;
-      state.offsetX = parseFloat(inputOffsetX.value) || 0;
-      state.offsetY = parseFloat(inputOffsetY.value) || 0;
-      
-      if (!toggleAutoCenter.checked) {
-          updateLayout();
-      }
+      updateLayout();
     });
-  });
-
-  toggleAutoCenter.addEventListener('change', (e) => {
-    state.autoCenter = e.target.checked;
-    inputOffsetX.disabled = state.autoCenter;
-    inputOffsetY.disabled = state.autoCenter;
-    updateLayout();
   });
 
   toggleAutoFlipBack.addEventListener('change', (e) => {
@@ -234,19 +210,20 @@ function syncUIFromState() {
 }
 
 function updateLayout() {
-  if (state.autoCenter) {
-    state.offsetX = (state.paperW - state.cardW) / 2;
-    state.offsetY = (state.paperH - state.cardH) / 2;
-    inputOffsetX.value = state.offsetX.toFixed(1);
-    inputOffsetY.value = state.offsetY.toFixed(1);
-  }
+  // Hardcoded Virtual 10x15cm Paper for the printer trick
+  const paperW = 100;
+  const paperH = 150;
+  
+  // Calculate offsets to center the card on the 10x15 paper
+  const offsetX = (paperW - state.cardW) / 2;
+  const offsetY = (paperH - state.cardH) / 2;
 
-  const cssPaperW = `${state.paperW}mm`;
-  const cssPaperH = `${state.paperH}mm`;
+  const cssPaperW = `${paperW}mm`;
+  const cssPaperH = `${paperH}mm`;
   const cssCardW = `${state.cardW}mm`;
   const cssCardH = `${state.cardH}mm`;
-  const cssOffsetX = `${state.offsetX}mm`;
-  const cssOffsetY = `${state.offsetY}mm`;
+  const cssOffsetX = `${offsetX}mm`;
+  const cssOffsetY = `${offsetY}mm`;
 
   // Update dynamic print stylesheet
   dynamicPrintStyle.textContent = `
