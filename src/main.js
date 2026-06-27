@@ -23,6 +23,8 @@ const btnConfirmPrint = document.getElementById('btn-confirm-print');
 // Controls
 const inputCardW = document.getElementById('card-w');
 const inputCardH = document.getElementById('card-h');
+const inputPrintOffsetX = document.getElementById('print-offset-x');
+const inputPrintOffsetY = document.getElementById('print-offset-y');
 const toggleAutoFlipBack = document.getElementById('auto-flip-back');
 
 const sliderBrightness = document.getElementById('brightness');
@@ -41,6 +43,8 @@ const btnPrintBack = document.getElementById('btn-print-back');
 let state = {
   cardW: 54.0,
   cardH: 86.0,
+  printOffsetX: 0,
+  printOffsetY: 0,
   autoFlipBack: true,
   currentSide: 'front', // 'front' | 'back'
   pendingPrintSide: null,
@@ -75,13 +79,10 @@ function attachEventListeners() {
   });
 
   // Layout Inputs
-  [inputCardW, inputCardH].forEach(input => {
-    input.addEventListener('input', () => {
-      state.cardW = parseFloat(inputCardW.value) || 54;
-      state.cardH = parseFloat(inputCardH.value) || 86;
-      updateLayout();
-    });
-  });
+  inputCardW.addEventListener('input', (e) => { state.cardW = parseFloat(e.target.value) || 54; updateLayout(); });
+  inputCardH.addEventListener('input', (e) => { state.cardH = parseFloat(e.target.value) || 86; updateLayout(); });
+  inputPrintOffsetX.addEventListener('input', (e) => { state.printOffsetX = parseFloat(e.target.value) || 0; updateLayout(); });
+  inputPrintOffsetY.addEventListener('input', (e) => { state.printOffsetY = parseFloat(e.target.value) || 0; updateLayout(); });
 
   toggleAutoFlipBack.addEventListener('change', (e) => {
     state.autoFlipBack = e.target.checked;
@@ -215,16 +216,20 @@ function updateLayout() {
   const paperW = 210;
   const paperH = 297;
   
-  // Calculate offsets to center the card HORIZONTALLY, and align it to the TOP
-  const offsetX = (paperW - state.cardW) / 2;
-  const offsetY = 0; // Align to the absolute top edge of the virtual paper
+  // Calculate base offsets to center the card HORIZONTALLY, and align it to the TOP
+  const baseOffsetX = (paperW - state.cardW) / 2;
+  const baseOffsetY = 0; // Align to the absolute top edge of the virtual paper
+  
+  // Apply user-defined calibration offsets
+  const finalOffsetX = baseOffsetX + state.printOffsetX;
+  const finalOffsetY = baseOffsetY + state.printOffsetY;
 
   const cssPaperW = `${paperW}mm`;
   const cssPaperH = `${paperH}mm`;
   const cssCardW = `${state.cardW}mm`;
   const cssCardH = `${state.cardH}mm`;
-  const cssOffsetX = `${offsetX}mm`;
-  const cssOffsetY = `${offsetY}mm`;
+  const cssOffsetX = `${finalOffsetX}mm`;
+  const cssOffsetY = `${finalOffsetY}mm`;
 
   // Update dynamic print stylesheet
   dynamicPrintStyle.textContent = `
