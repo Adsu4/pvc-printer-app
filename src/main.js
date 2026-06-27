@@ -301,7 +301,7 @@ function scalePreview() {
   const scaleY = wrapperHeight / pxH;
   
   let scale = Math.min(scaleX, scaleY, 2.5); // Allow more scaling since card is small
-  uiCardSlot.style.transform = `scale(${scale})`;
+  canvasWrapper.style.transform = `scale(${scale})`;
 }
 
 document.addEventListener('DOMContentLoaded', init);
