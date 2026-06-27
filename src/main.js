@@ -214,9 +214,9 @@ function updateLayout() {
   const paperW = 100;
   const paperH = 150;
   
-  // Calculate offsets to center the card HORIZONTALLY, and align it to the BOTTOM
+  // Calculate offsets to center the card HORIZONTALLY, and align it to the TOP
   const offsetX = (paperW - state.cardW) / 2;
-  const offsetY = paperH - state.cardH; // Align to the very bottom edge of the virtual paper
+  const offsetY = 0; // Align to the absolute top edge of the virtual paper
 
   const cssPaperW = `${paperW}mm`;
   const cssPaperH = `${paperH}mm`;
