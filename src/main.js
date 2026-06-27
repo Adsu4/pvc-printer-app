@@ -6,7 +6,6 @@ const printCardImage = document.getElementById('print-card-image');
 const uiPlaceholder = document.getElementById('ui-placeholder');
 const placeholderMsg = document.getElementById('placeholder-msg');
 
-const uiPaperSheet = document.getElementById('ui-paper-sheet');
 const uiCardSlot = document.getElementById('ui-card-slot');
 const printCanvas = document.getElementById('print-canvas');
 const printPaperSheet = document.getElementById('print-paper-sheet');
@@ -258,14 +257,10 @@ function updateLayout() {
     }
   `;
 
-  // Update UI Elements
-  uiPaperSheet.style.width = cssPaperW;
-  uiPaperSheet.style.height = cssPaperH;
-  
+  // Update UI Elements (Only Card Slot, no Paper Sheet)
   uiCardSlot.style.width = cssCardW;
   uiCardSlot.style.height = cssCardH;
-  uiCardSlot.style.left = cssOffsetX;
-  uiCardSlot.style.top = cssOffsetY;
+  // uiCardSlot left/top offsets removed so it remains centered in the preview wrapper.
 
   printCardSlot.style.width = cssCardW;
   printCardSlot.style.height = cssCardH;
@@ -300,13 +295,13 @@ function scalePreview() {
   const wrapperHeight = canvasWrapper.parentElement.clientHeight - 40;
   
   // 3.78 pixels per mm is standard 96 DPI screen approximation
-  const pxW = state.paperW * 3.78; 
-  const pxH = state.paperH * 3.78;
+  const pxW = state.cardW * 3.78; 
+  const pxH = state.cardH * 3.78;
   const scaleX = wrapperWidth / pxW;
   const scaleY = wrapperHeight / pxH;
   
-  let scale = Math.min(scaleX, scaleY, 1.5); 
-  uiPaperSheet.style.transform = `scale(${scale})`;
+  let scale = Math.min(scaleX, scaleY, 2.5); // Allow more scaling since card is small
+  uiCardSlot.style.transform = `scale(${scale})`;
 }
 
 document.addEventListener('DOMContentLoaded', init);
