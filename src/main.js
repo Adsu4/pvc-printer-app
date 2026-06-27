@@ -214,9 +214,9 @@ function updateLayout() {
   const paperW = 100;
   const paperH = 150;
   
-  // Calculate offsets to center the card on the 10x15 paper
+  // Calculate offsets to center the card HORIZONTALLY, but align it to the TOP
   const offsetX = (paperW - state.cardW) / 2;
-  const offsetY = (paperH - state.cardH) / 2;
+  const offsetY = 0; // Align to the very top edge of the feed slot
 
   const cssPaperW = `${paperW}mm`;
   const cssPaperH = `${paperH}mm`;
