@@ -6,8 +6,10 @@ const printCardImage = document.getElementById('print-card-image');
 const uiPlaceholder = document.getElementById('ui-placeholder');
 const placeholderMsg = document.getElementById('placeholder-msg');
 
+const uiPaperSheet = document.getElementById('ui-paper-sheet');
 const uiCardSlot = document.getElementById('ui-card-slot');
 const printCanvas = document.getElementById('print-canvas');
+const printPaperSheet = document.getElementById('print-paper-sheet');
 const printCardSlot = document.getElementById('print-card-slot');
 const canvasWrapper = document.querySelector('.canvas-wrapper');
 const dynamicPrintStyle = document.getElementById('dynamic-print-style');
@@ -20,8 +22,13 @@ const btnCancelPrint = document.getElementById('btn-cancel-print');
 const btnConfirmPrint = document.getElementById('btn-confirm-print');
 
 // Controls
+const inputPaperW = document.getElementById('paper-w');
+const inputPaperH = document.getElementById('paper-h');
 const inputCardW = document.getElementById('card-w');
 const inputCardH = document.getElementById('card-h');
+const inputOffsetX = document.getElementById('offset-x');
+const inputOffsetY = document.getElementById('offset-y');
+const toggleAutoCenter = document.getElementById('auto-center');
 const toggleAutoFlipBack = document.getElementById('auto-flip-back');
 
 const sliderBrightness = document.getElementById('brightness');
@@ -38,8 +45,13 @@ const btnPrintBack = document.getElementById('btn-print-back');
 
 // State
 let state = {
+  paperW: 100.0,
+  paperH: 150.0,
   cardW: 54.0,
   cardH: 86.0,
+  offsetX: 23.0,
+  offsetY: 32.0,
+  autoCenter: true,
   autoFlipBack: true,
   currentSide: 'front', // 'front' | 'back'
   pendingPrintSide: null,
@@ -74,12 +86,26 @@ function attachEventListeners() {
   });
 
   // Layout Inputs
-  [inputCardW, inputCardH].forEach(input => {
+  [inputPaperW, inputPaperH, inputCardW, inputCardH, inputOffsetX, inputOffsetY].forEach(input => {
     input.addEventListener('input', () => {
+      state.paperW = parseFloat(inputPaperW.value) || 100;
+      state.paperH = parseFloat(inputPaperH.value) || 150;
       state.cardW = parseFloat(inputCardW.value) || 54;
       state.cardH = parseFloat(inputCardH.value) || 86;
-      updateLayout();
+      state.offsetX = parseFloat(inputOffsetX.value) || 0;
+      state.offsetY = parseFloat(inputOffsetY.value) || 0;
+      
+      if (!toggleAutoCenter.checked) {
+          updateLayout();
+      }
     });
+  });
+
+  toggleAutoCenter.addEventListener('change', (e) => {
+    state.autoCenter = e.target.checked;
+    inputOffsetX.disabled = state.autoCenter;
+    inputOffsetY.disabled = state.autoCenter;
+    updateLayout();
   });
 
   toggleAutoFlipBack.addEventListener('change', (e) => {
@@ -209,21 +235,42 @@ function syncUIFromState() {
 }
 
 function updateLayout() {
+  if (state.autoCenter) {
+    state.offsetX = (state.paperW - state.cardW) / 2;
+    state.offsetY = (state.paperH - state.cardH) / 2;
+    inputOffsetX.value = state.offsetX.toFixed(1);
+    inputOffsetY.value = state.offsetY.toFixed(1);
+  }
+
+  const cssPaperW = `${state.paperW}mm`;
+  const cssPaperH = `${state.paperH}mm`;
   const cssCardW = `${state.cardW}mm`;
   const cssCardH = `${state.cardH}mm`;
+  const cssOffsetX = `${state.offsetX}mm`;
+  const cssOffsetY = `${state.offsetY}mm`;
 
-  // The actual print page is just the size of the card
+  // Update dynamic print stylesheet
   dynamicPrintStyle.textContent = `
     @media print {
-      @page { size: ${cssCardW} ${cssCardH}; margin: 0; }
-      #print-canvas, .print-card-slot { width: ${cssCardW} !important; height: ${cssCardH} !important; }
+      @page { size: ${cssPaperW} ${cssPaperH}; margin: 0; }
+      #print-canvas, .print-paper-sheet { width: ${cssPaperW} !important; height: ${cssPaperH} !important; }
+      .print-card-slot { width: ${cssCardW}; height: ${cssCardH}; left: ${cssOffsetX}; top: ${cssOffsetY}; }
     }
   `;
 
-  [uiCardSlot, printCardSlot].forEach(slot => {
-    slot.style.width = cssCardW;
-    slot.style.height = cssCardH;
-  });
+  // Update UI Elements
+  uiPaperSheet.style.width = cssPaperW;
+  uiPaperSheet.style.height = cssPaperH;
+  
+  uiCardSlot.style.width = cssCardW;
+  uiCardSlot.style.height = cssCardH;
+  uiCardSlot.style.left = cssOffsetX;
+  uiCardSlot.style.top = cssOffsetY;
+
+  printCardSlot.style.width = cssCardW;
+  printCardSlot.style.height = cssCardH;
+  printCardSlot.style.left = cssOffsetX;
+  printCardSlot.style.top = cssOffsetY;
 
   scalePreview();
 }
@@ -253,13 +300,13 @@ function scalePreview() {
   const wrapperHeight = canvasWrapper.parentElement.clientHeight - 40;
   
   // 3.78 pixels per mm is standard 96 DPI screen approximation
-  const pxW = state.cardW * 3.78; 
-  const pxH = state.cardH * 3.78;
+  const pxW = state.paperW * 3.78; 
+  const pxH = state.paperH * 3.78;
   const scaleX = wrapperWidth / pxW;
   const scaleY = wrapperHeight / pxH;
   
-  let scale = Math.min(scaleX, scaleY, 2.5); // Allow more scaling up since it's just a card
-  uiCardSlot.style.transform = `scale(${scale})`;
+  let scale = Math.min(scaleX, scaleY, 1.5); 
+  uiPaperSheet.style.transform = `scale(${scale})`;
 }
 
 document.addEventListener('DOMContentLoaded', init);
