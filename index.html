@@ -104,22 +104,14 @@
                     </div>
                 </section>
 
-                <!-- 3. Sheet Layout Section -->
+                <!-- 3. Printer Settings Section -->
                 <section class="control-section">
                     <div class="section-header">
                         <div class="icon-circle"><i class="fa-solid fa-ruler-combined"></i></div>
-                        <h2>3. Dragon Sheet Layout (mm)</h2>
+                        <h2>3. Card Dimensions (mm)</h2>
                     </div>
                     
                     <div class="input-grid">
-                        <div class="input-field">
-                            <label>Sheet Width</label>
-                            <input type="number" id="paper-w" value="100" step="1">
-                        </div>
-                        <div class="input-field">
-                            <label>Sheet Height</label>
-                            <input type="number" id="paper-h" value="150" step="1">
-                        </div>
                         <div class="input-field">
                             <label>Card Width</label>
                             <input type="number" id="card-w" value="54" step="0.5">
@@ -127,25 +119,6 @@
                         <div class="input-field">
                             <label>Card Height</label>
                             <input type="number" id="card-h" value="86" step="0.5">
-                        </div>
-                    </div>
-
-                    <div class="checkbox-group mt-3">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="auto-center" checked>
-                            <span class="checkmark"></span>
-                            Auto-Center Horizontally & Vertically
-                        </label>
-                    </div>
-
-                    <div class="input-grid mt-3">
-                        <div class="input-field">
-                            <label>Offset X</label>
-                            <input type="number" id="offset-x" value="23" step="0.5" disabled>
-                        </div>
-                        <div class="input-field">
-                            <label>Offset Y</label>
-                            <input type="number" id="offset-y" value="32" step="0.5" disabled>
                         </div>
                     </div>
 
@@ -162,25 +135,22 @@
             <!-- Live Preview Area -->
             <section class="preview-area">
                 <div class="preview-toolbar">
-                    <span class="preview-title">Live 10x15cm Sheet Preview</span>
-                    <span class="preview-subtitle">Actual Print Scale</span>
+                    <span class="preview-title">Live PVC Preview</span>
+                    <span class="preview-subtitle">Actual Card Size</span>
                 </div>
                 
                 <div class="canvas-container">
                     <div class="canvas-wrapper">
-                        <!-- Dragon Sheet Representation -->
-                        <div id="ui-paper-sheet" class="ui-paper-sheet shadow-2xl">
-                            <!-- Subtle Grid -->
-                            <div class="paper-grid"></div>
+                        <!-- Card Representation in UI (No surrounding paper) -->
+                        <div id="ui-card-slot" class="ui-card-slot shadow-2xl">
+                            <!-- Visual Feed Tab (Matches physical CB Softcard) -->
+                            <div class="card-feed-tab"></div>
                             
-                            <!-- Card Design Area -->
-                            <div id="ui-card-slot" class="ui-card-slot">
-                                <div class="image-container" id="ui-image-container">
-                                    <img id="ui-card-image" src="" alt="No Image" style="display: none;" />
-                                    <div class="placeholder-text" id="ui-placeholder">
-                                        <i class="fa-regular fa-image"></i>
-                                        <p id="placeholder-msg">Upload Front Image</p>
-                                    </div>
+                            <div class="image-container" id="ui-image-container">
+                                <img id="ui-card-image" src="" alt="No Image" style="display: none;" />
+                                <div class="placeholder-text" id="ui-placeholder">
+                                    <i class="fa-regular fa-image"></i>
+                                    <p id="placeholder-msg">Upload Front Image</p>
                                 </div>
                             </div>
                         </div>
@@ -195,23 +165,23 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-icon"><i class="fa-solid fa-circle-info"></i></div>
-                <h2>Dragon Sheet Print Instructions</h2>
+                <h2>Windows Print Instructions</h2>
             </div>
             
-            <p class="modal-desc">You are printing to a 10x15cm Dragon Sheet. Please ensure these settings are selected in the Windows Print Dialog:</p>
+            <p class="modal-desc"><strong>CRITICAL:</strong> Even though you are feeding a small PVC card, you MUST tell the printer it is a 10x15cm sheet. Our app will magically center the image for you.</p>
             
             <ul class="instructions-list">
                 <li>
                     <i class="fa-solid fa-1 text-blue"></i>
-                    <div>Set Printer to your <strong>Epson Inkjet (L3110/L3250)</strong>.</div>
+                    <div>Set Printer to <strong>Epson L3110 Series</strong>.</div>
                 </li>
                 <li>
                     <i class="fa-solid fa-2 text-blue"></i>
-                    <div>Set Paper Size to <strong>10x15 cm (4x6 in)</strong>.</div>
+                    <div>Set Paper Size to <strong>10x15 cm (4x6 in)</strong>. Do NOT select your custom card size.</div>
                 </li>
                 <li>
                     <i class="fa-solid fa-3 text-blue"></i>
-                    <div><strong>Check the "Borderless" option</strong> (Crucial so printer doesn't shrink it).</div>
+                    <div>Set Margins to <strong>None / Borderless</strong>.</div>
                 </li>
                 <li>
                     <i class="fa-solid fa-4 text-blue"></i>
@@ -219,7 +189,7 @@
                 </li>
                 <li>
                     <i class="fa-solid fa-5 text-blue"></i>
-                    <div>Set Paper Type to <strong>Epson Matte</strong> (or Premium Glossy).</div>
+                    <div>Set Paper Type to <strong>Epson Matte</strong> or Premium Glossy.</div>
                 </li>
                 <li>
                     <i class="fa-solid fa-6 text-blue"></i>
@@ -227,7 +197,7 @@
                 </li>
                 <li>
                     <i class="fa-solid fa-7 text-blue"></i>
-                    <div>Load the Dragon Sheet film and click Print!</div>
+                    <div>Place the PVC card directly into the rear feed tray (centered).</div>
                 </li>
             </ul>
 
@@ -241,6 +211,7 @@
     </div>
 
     <!-- Print Canvas (Hidden in UI) -->
+    <!-- This will create the virtual 10x15cm paper, with the card slot centered inside it -->
     <div id="print-canvas">
         <div id="print-paper-sheet" class="print-paper-sheet">
             <div id="print-card-slot" class="print-card-slot">
